@@ -5,10 +5,10 @@ from __future__ import annotations
 import pytest
 
 from twmcp.tools.tw_id import (
-    generate_test_tax_id,
     generate_test_taiwan_id,
-    validate_tax_id,
+    generate_test_tax_id,
     validate_taiwan_id,
+    validate_tax_id,
 )
 
 

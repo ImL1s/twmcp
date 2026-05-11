@@ -79,7 +79,7 @@ def western_to_roc(western: str | int) -> dict:
     return {"valid": False, "reason": "格式錯誤"}
 
 
-def register(mcp: "FastMCP") -> None:
+def register(mcp: FastMCP) -> None:
     @mcp.tool()
     def roc_year_to_western_tool(roc: str) -> dict:
         """民國年 → 西元年. 支援 '114' / '114-05-04' / '114年5月4日' / '1140504' 等格式."""

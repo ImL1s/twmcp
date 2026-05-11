@@ -47,7 +47,7 @@ def format_chinese_numerals(
     return str(cn2an.cn2an(str(text), "smart"))
 
 
-def register(mcp: "FastMCP") -> None:
+def register(mcp: FastMCP) -> None:
     @mcp.tool()
     def simplified_to_traditional_tool(text: str, variant: str = "zh-tw") -> str:
         """簡體中文轉繁體。variant: 'zh-tw' (預設) 或 'zh-hk'."""

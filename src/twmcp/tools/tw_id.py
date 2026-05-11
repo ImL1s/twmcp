@@ -12,27 +12,68 @@ if TYPE_CHECKING:
 
 # 內政部身分證字母對應數值表 (含外國人 I/O)
 ID_CODES: dict[str, int] = {
-    "A": 10, "B": 11, "C": 12, "D": 13, "E": 14, "F": 15, "G": 16,
-    "H": 17, "I": 34, "J": 18, "K": 19, "L": 20, "M": 21, "N": 22,
-    "O": 35, "P": 23, "Q": 24, "R": 25, "S": 26, "T": 27, "U": 28,
-    "V": 29, "W": 32, "X": 30, "Y": 31, "Z": 33,
+    "A": 10,
+    "B": 11,
+    "C": 12,
+    "D": 13,
+    "E": 14,
+    "F": 15,
+    "G": 16,
+    "H": 17,
+    "I": 34,
+    "J": 18,
+    "K": 19,
+    "L": 20,
+    "M": 21,
+    "N": 22,
+    "O": 35,
+    "P": 23,
+    "Q": 24,
+    "R": 25,
+    "S": 26,
+    "T": 27,
+    "U": 28,
+    "V": 29,
+    "W": 32,
+    "X": 30,
+    "Y": 31,
+    "Z": 33,
 }
 
 _COUNTY_BY_LETTER: dict[str, str] = {
-    "A": "臺北市", "B": "臺中市", "C": "基隆市", "D": "臺南市",
-    "E": "高雄市", "F": "新北市", "G": "宜蘭縣", "H": "桃園市",
-    "J": "新竹縣", "K": "苗栗縣", "L": "臺中縣(舊)", "M": "南投縣",
-    "N": "彰化縣", "P": "雲林縣", "Q": "嘉義縣", "R": "臺南縣(舊)",
-    "S": "高雄縣(舊)", "T": "屏東縣", "U": "花蓮縣", "V": "臺東縣",
-    "X": "澎湖縣", "Y": "陽明山(廢)", "W": "金門縣", "Z": "連江縣",
-    "I": "嘉義市", "O": "新竹市",
+    "A": "臺北市",
+    "B": "臺中市",
+    "C": "基隆市",
+    "D": "臺南市",
+    "E": "高雄市",
+    "F": "新北市",
+    "G": "宜蘭縣",
+    "H": "桃園市",
+    "J": "新竹縣",
+    "K": "苗栗縣",
+    "L": "臺中縣(舊)",
+    "M": "南投縣",
+    "N": "彰化縣",
+    "P": "雲林縣",
+    "Q": "嘉義縣",
+    "R": "臺南縣(舊)",
+    "S": "高雄縣(舊)",
+    "T": "屏東縣",
+    "U": "花蓮縣",
+    "V": "臺東縣",
+    "X": "澎湖縣",
+    "Y": "陽明山(廢)",
+    "W": "金門縣",
+    "Z": "連江縣",
+    "I": "嘉義市",
+    "O": "新竹市",
 }
 
 
 def _id_checksum_pass(letter: str, digits: list[int]) -> bool:
     code = ID_CODES[letter]
     total = code // 10 + (code % 10) * 9
-    total += sum(d * w for d, w in zip(digits, [8, 7, 6, 5, 4, 3, 2, 1, 1]))
+    total += sum(d * w for d, w in zip(digits, [8, 7, 6, 5, 4, 3, 2, 1, 1], strict=False))
     return total % 10 == 0
 
 
@@ -97,7 +138,7 @@ def generate_test_taiwan_id(
     body = [int(first)] + [rng.randrange(10) for _ in range(7)]
     code = ID_CODES[city_letter]
     total = code // 10 + (code % 10) * 9
-    total += sum(d * w for d, w in zip(body, [8, 7, 6, 5, 4, 3, 2, 1]))
+    total += sum(d * w for d, w in zip(body, [8, 7, 6, 5, 4, 3, 2, 1], strict=False))
     check = (-total) % 10
     return {
         "is_test": True,
@@ -110,7 +151,7 @@ def generate_test_taiwan_id(
 def _tax_checksum_sum(s: str) -> int:
     weights = [1, 2, 1, 2, 1, 2, 4, 1]
     total = 0
-    for ch, w in zip(s, weights):
+    for ch, w in zip(s, weights, strict=False):
         p = int(ch) * w
         total += p // 10 + p % 10
     return total
@@ -153,7 +194,7 @@ def generate_test_tax_id(
     return {"is_test": True, "valid": False, "reason": "exhausted"}
 
 
-def register(mcp: "FastMCP") -> None:
+def register(mcp: FastMCP) -> None:
     @mcp.tool()
     def validate_taiwan_id_number(id_number: str) -> dict:
         """驗證中華民國身分證字號或外國人統一證號 (公開演算法 derive, 無 PII lookup)."""
@@ -162,11 +203,9 @@ def register(mcp: "FastMCP") -> None:
     @mcp.tool()
     def validate_tax_id_number(tax_id: str, rule: str = "post-2023") -> dict:
         """驗證 8 位統一編號 checksum. rule='post-2023'(mod5, 預設) | 'pre-2023'(mod10) | 'both'."""
-        rule_typed: Literal["post-2023", "pre-2023", "both"]
-        if rule in ("post-2023", "pre-2023", "both"):
-            rule_typed = rule  # type: ignore[assignment]
-        else:
-            rule_typed = "post-2023"
+        rule_typed: Literal["post-2023", "pre-2023", "both"] = (
+            rule if rule in ("post-2023", "pre-2023", "both") else "post-2023"  # type: ignore[assignment]
+        )
         return validate_tax_id(tax_id, rule=rule_typed)
 
     @mcp.tool()
@@ -176,19 +215,13 @@ def register(mcp: "FastMCP") -> None:
         seed: int | None = None,
     ) -> dict:
         """產生通過 checksum 的測試身分證 (非真實 PII; 結果含 is_test=True)."""
-        s: Literal["male", "female", None]
-        if sex in ("male", "female"):
-            s = sex  # type: ignore[assignment]
-        else:
-            s = None
+        s: Literal["male", "female", None] = sex if sex in ("male", "female") else None  # type: ignore[assignment]
         return generate_test_taiwan_id(sex=s, city_letter=city_letter, seed=seed)
 
     @mcp.tool()
     def generate_test_tax_id_tool(rule: str = "post-2023", seed: int | None = None) -> dict:
         """產生通過 checksum 的測試統編 (非真實註冊; 結果含 is_test=True)."""
-        r: Literal["post-2023", "pre-2023"]
-        if rule in ("post-2023", "pre-2023"):
-            r = rule  # type: ignore[assignment]
-        else:
-            r = "post-2023"
+        r: Literal["post-2023", "pre-2023"] = (
+            rule if rule in ("post-2023", "pre-2023") else "post-2023"  # type: ignore[assignment]
+        )
         return generate_test_tax_id(rule=r, seed=seed)

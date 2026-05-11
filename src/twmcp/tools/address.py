@@ -79,7 +79,7 @@ def normalize_address(addr: str, upgrade_legacy: bool = True) -> dict:
     if upgrade_legacy:
         for legacy, modern in LEGACY_COUNTY_TO_CITY.items():
             if s.startswith(legacy):
-                s = modern + s[len(legacy):]
+                s = modern + s[len(legacy) :]
                 upgraded = True
                 legacy_used = legacy
                 break
@@ -118,7 +118,7 @@ def align_legacy_county(name: str) -> dict:
     }
 
 
-def register(mcp: "FastMCP") -> None:
+def register(mcp: FastMCP) -> None:
     @mcp.tool()
     def normalize_taiwan_address(addr: str, upgrade_legacy: bool = True) -> dict:
         """正規化台灣地址：全形→半形、巿/区/号 異體字、台→臺、(選配) 舊縣名升格."""

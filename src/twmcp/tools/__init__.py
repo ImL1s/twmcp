@@ -23,7 +23,7 @@ _TOOL_MODULES = (
 )
 
 
-def register_all_tools(mcp: "FastMCP") -> None:
+def register_all_tools(mcp: FastMCP) -> None:
     """Register every tool module's @mcp.tool() decorated functions."""
     for mod in _TOOL_MODULES:
         mod.register(mcp)
