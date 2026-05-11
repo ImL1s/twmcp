@@ -57,6 +57,9 @@ pip install -e ".[dev]"
 
 # 日常開發
 pytest                      # 跑全部 tests (~56 個)
+pytest tests/test_tw_id.py::TestTaiwanID                              # 跑單個 class
+pytest tests/test_tw_id.py::TestTaiwanID::test_valid_national_male    # 跑單個 test
+pytest -k "TaxID"           # 名稱/class 含 TaxID 的所有 test（-k 大小寫不敏感）
 ruff check src tests        # lint
 ruff format src tests       # 自動格式化
 ruff check --fix src tests  # auto-fix lint
@@ -158,6 +161,22 @@ def register(mcp: "FastMCP") -> None:
 - **License header**：不寫，靠 LICENSE 檔
 - **註解**：只寫 WHY 不寫 WHAT。歷史/相容性註解 ok（如「2010 升格新北市」），實作註解少
 - **i18n**：所有 docstring、user-facing string 用繁體中文；變數/函式名英文
+- **Tests**：class-based grouping (`TestTaiwanID`、`TestTaxID`、`TestForeignerID`...) — 一個 class 對應一個邏輯區塊（純函式 / 邊界 / 規則分支），不是按 fixture 拆檔
+
+## 環境變數
+
+純函式 tool 不需任何環境變數。下表是 server / CLI / paths 層的覆寫旋鈕：
+
+| 變數 | 預設 | 用途 |
+|---|---|---|
+| `TWMCP_TRANSPORT` | `stdio` | MCP transport (`stdio` 給 Claude Code/Cursor、`http` 給遠端) |
+| `TWMCP_HOST` | `127.0.0.1` | HTTP mode 綁定 host — **絕不**改成 `0.0.0.0` 除非前面有 auth gateway |
+| `TWMCP_PORT` | `8765` | HTTP mode 埠 |
+| `TWMCP_CACHE_DIR` | `platformdirs.user_cache_dir("twmcp")` | 覆寫 cache 目錄；接受 `~` 展開 |
+| `TWMCP_CONFIG_DIR` | `platformdirs.user_config_dir("twmcp")` | 覆寫 config 目錄；接受 `~` 展開 |
+| `TWMCP_DATA_DIR` | `platformdirs.user_data_dir("twmcp")` | 覆寫 data 目錄（下載的 open data index）；接受 `~` 展開 |
+
+新加 path 旋鈕一律走 `src/twmcp/utils/paths.py`，不要 hardcode `~/.twmcp`。
 
 ## 設計決策（已採納外部 LLM 建議）
 
@@ -191,6 +210,15 @@ def register(mcp: "FastMCP") -> None:
 - `docs:` 文件/分析存檔
 - 含 `Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>` trailer
 - HEREDOC 多行 commit message 含「為什麼」
+
+## CI 與每日資料更新
+
+兩條 GitHub Actions workflows（`.github/workflows/`）：
+
+- **`ci.yml`** — push/PR 觸發；Python `3.11 / 3.12 / 3.13` 三版矩陣；流程：`pip install -e ".[dev]"` → `ruff check` → `ruff format --check` → `pytest -q` → CLI smoke (`twmcp version`、`twmcp id A123456789`、`twmcp roc-to-year 114`、`twmcp addr-normalize "台北市信義路5段7號"`)。**改 deps 前先在這三版本上跑過**。
+- **`daily-refresh.yml`** — cron `0 20 * * *` (UTC，等於 TW 04:00) + manual dispatch；跑 `scripts/sync_holidays.py` 與 `scripts/sync_pcc.py --since yesterday`（`continue-on-error: true` 不擋整個 workflow），有 diff 就以 `github-actions[bot]` commit 到 `src/twmcp/data/` 並 push。
+
+新加 daily sync script 規則：放 `scripts/sync_*.py`，輸出寫進 `src/twmcp/data/`（會被 commit），並在 `daily-refresh.yml` 多一行 `python scripts/sync_<your>.py`。執行端只用 stdlib（`urllib.request` + `json`），避免拖入額外 deps；端點需先實際 `curl` 200 驗證才能加。
 
 ## 啟動 twmcp MCP 的 Claude Code session
 
