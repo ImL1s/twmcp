@@ -24,9 +24,18 @@ register_all_tools(mcp)
 
 
 def main() -> None:
-    """Run the MCP server. Transport selected via TWMCP_TRANSPORT env var."""
+    """Run the MCP server. Transport selected via TWMCP_TRANSPORT env var.
+
+    HTTP mode binds to 127.0.0.1 by default for safety (local-only).
+    Override host/port via TWMCP_HOST / TWMCP_PORT env vars if you
+    explicitly want remote access — make sure you have auth in front.
+    """
     transport = os.environ.get("TWMCP_TRANSPORT", "stdio")
     if transport == "http":
+        host = os.environ.get("TWMCP_HOST", "127.0.0.1")
+        port = int(os.environ.get("TWMCP_PORT", "8765"))
+        mcp.settings.host = host
+        mcp.settings.port = port
         mcp.run(transport="streamable-http")
     else:
         mcp.run(transport="stdio")
