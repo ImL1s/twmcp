@@ -1,0 +1,15 @@
+{
+  "name": "twmcp",
+  "version": "0.1.0",
+  "description": "Taiwan utilities + open data MCP — open-source, local, no token. Drop-in alternative to hub.twinkleai.tw.",
+  "author": "iml1s",
+  "license": "MIT",
+  "homepage": "https://github.com/iml1s/twmcp",
+  "repository": "https://github.com/iml1s/twmcp",
+  "keywords": ["taiwan", "mcp", "opendata", "twtools", "data.gov.tw"],
+  "components": {
+    "skills": ["skills/tw-utils", "skills/tw-data"],
+    "commands": ["commands/twmcp-setup.md", "commands/twmcp-refresh.md"],
+    "agents": ["agents/tw-data-analyst.md"]
+  }
+}

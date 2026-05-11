@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "twmcp": {
+      "command": "twmcp",
+      "args": ["serve"],
+      "env": {
+        "TWMCP_TRANSPORT": "stdio"
+      }
+    }
+  }
+}
