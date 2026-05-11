@@ -25,7 +25,7 @@ jobs:
       - name: Refresh public data sources
         run: |
           python scripts/sync_holidays.py
-          python scripts/sync_pcc.py --since yesterday
+          # TODO(v0.5): python scripts/sync_pcc.py --since yesterday
         continue-on-error: true
 
       - name: Commit if changed
