@@ -9,7 +9,7 @@
 *   **一句話定義**：一個獨立的、遵循標準化協議（HTTP/HTTPS 或 stdio）的背景服務，它向任何相容的 AI Assistant（如 Claude Code, Cursor, Open Interpreter）暴露一組可執行的工具（Tools）。
 *   **目錄結構 (以 `twmcp` 為例)**：
     ```
-    /Users/iml1s/Documents/mine/twmcp/
+    twmcp/
     ├── src/
     │   └── twmcp/
     │       ├── __init__.py
@@ -61,7 +61,7 @@
 *   **一句話定義**：一份存在於用戶設定目錄的 Markdown 文件，它透過自然語言描述和關鍵字「教導」Claude 何時以及如何使用某個工具或知識，以增強其在特定領域的「技能」。
 *   **目錄結構**：
     ```
-    /Users/iml1s/.claude/skills/
+    ~/.claude/skills/
     └── tw-data/
         └── SKILL.md  # 核心技能定義檔
     ```
@@ -111,7 +111,7 @@
 *   **一句話定義**：一個完整的、自包含的擴充套件包，可以將 MCP Server 的管理、Skills、自訂命令 (`/commands`)、智慧體 (`/agents`) 和鉤子 (`hooks`) 整合在一起，提供一鍵安裝的無縫體驗。
 *   **目錄結構**：
     ```
-    /Users/iml1s/Documents/mine/twmcp/  (你的開發目錄)
+    twmcp/  (專案開發目錄)
     ├── .claude-plugin/
     │   └── plugin.json       # 核心 manifest 檔案
     ├── commands/

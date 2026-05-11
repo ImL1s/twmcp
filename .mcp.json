@@ -1,12 +1,11 @@
 {
   "mcpServers": {
     "twmcp": {
-      "command": "/Users/iml1s/Documents/mine/twmcp/.venv/bin/twmcp",
-      "args": ["serve"],
+      "command": "uvx",
+      "args": ["--from", ".", "twmcp", "serve"],
       "env": {
         "TWMCP_TRANSPORT": "stdio"
       }
     }
   }
 }
-
