@@ -47,6 +47,8 @@ dependencies = [
     "requests>=2.32",
     "lxml>=5,<6",
     "pandas>=2,<4",
+    # Cross-platform cache/config paths (per Gemini 3.1 Pro best practice #6)
+    "platformdirs>=4,<5",
 ]
 
 [project.optional-dependencies]

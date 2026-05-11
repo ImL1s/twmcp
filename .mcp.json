@@ -1,11 +1,12 @@
 {
   "mcpServers": {
     "twmcp": {
-      "command": "twmcp",
-      "args": ["serve"],
+      "command": "uvx",
+      "args": ["twmcp", "serve"],
       "env": {
         "TWMCP_TRANSPORT": "stdio"
       }
     }
   }
 }
+

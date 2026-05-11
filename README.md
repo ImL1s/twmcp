@@ -17,15 +17,23 @@ twmcp 是同等功能的開源、本地、永久免費替代品：
 
 ### 方法 A：MCP server（所有 client 通用）
 
-```bash
-pipx install twmcp
+推薦用 `uvx` 或 `pipx` 隔離依賴環境，避免污染全域 Python：
 
-# Claude Desktop / Claude Code
+```bash
+# 選項 1: uvx 隨用隨開（最輕量）
+uvx twmcp serve
+
+# 選項 2: pipx 安裝後常駐 PATH
+pipx install twmcp
+twmcp serve
+
+# Claude Desktop / Claude Code（任一安裝方式後）
 claude mcp add --transport stdio twmcp twmcp serve
+# 或用 uvx
+claude mcp add --transport stdio twmcp -- uvx twmcp serve
 
 # Cursor (~/.cursor/mcp.json)
-# 自動由 plugin 註冊，或手動加：
-# { "mcpServers": { "twmcp": { "command": "twmcp", "args": ["serve"] } } }
+# { "mcpServers": { "twmcp": { "command": "uvx", "args": ["twmcp", "serve"] } } }
 ```
 
 ### 方法 B：Claude Code Plugin（一鍵安裝）
