@@ -168,6 +168,12 @@ ruff format src tests
 
 新增 tool 的標準流程、編碼慣例、政府 API 端點清單、設計決策、外部 LLM 研究來源見 [`CLAUDE.md`](CLAUDE.md)。
 
+---
+
+## 支持
+
+如果這個專案幫你省了點時間，可以[請我喝杯咖啡](https://buymeacoffee.com/iml1s)。
+
 ## License
 
 - 程式碼：[MIT](LICENSE)
